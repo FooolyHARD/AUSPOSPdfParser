@@ -18,16 +18,42 @@ def convert(filepath):
     texfile.generate_tex_file(filename+".tex")
 
 def parseregex(s, num):
-    regex = [r'\ [A-Z][A-Z][A-Z][A-Z]\ ', r'\d\d/\d\d/\d\d\d\d', r'\w+ \d+ \d+ \d+.\d+ \d+ \d+ \d+.\d+ \d+.\d+ \d+.\d+'] #\w+\s\d+\s\d+\s\d+.\d+\s\d+\s\d+\s\d+.\d+\s\d+.\d+\s\d+.\d+.\s?\d+
-    matches = re.findall(regex[num], s)
-    matches = [match for match in matches if match != " NONE "]
-    print(matches)
+    regex = [r'\s[A-Z0-9]{4}\s', r'\d\d/\d\d/\d\d\d\d', r'\w{4}\s+\d+\s+\d+\s+\d+\.\d+\s+\d+\s\d+\s+\d+\.\d+\s+\d+\.\d+\s+\d+\.\d+'] #\w+\s\d+\s\d+\s\d+.\d+\s\d+\s\d+\s\d+.\d+\s\d+.\d+\s\d+.\d+.\s?\d+
+    #1 - Stations, 2 - 3.1AA, 3 - 3.2AA
+    substring_one = re.sub(r'[^A-Za-z0-9\s/\.\-]+', '', s)
+    substring_two = re.sub(r'\s*\.\s*', '.', substring_one)
+    substring_three = re.sub(r'O', '0', substring_two)
+    #print(substring_two)
+    matches = re.findall(regex[num], substring_three)
+    matches = [match for match in matches if match != (" N0NE " or " NONE ")]
+    #print(matches)
     return matches
 
 def clear(script):
     subprocess.call(['sh', './'+script])
 
-def main():   
+def AAProcess(filename):
+    file = open(str(filename), 'r');
+    output = open('res.txt', 'w')
+    string = file.readlines()
+    stations = parseregex(string[77], 0)
+    output.write('User Stations:')
+    output.write(str(stations) + '\n')
+    three_dot_one = parseregex(string[129], 1)
+    output.write('3.1AA:')
+    parsed_dates = []
+    for i in range(0, len(stations)):
+        parsed_dates.append(three_dot_one[i])
+    output.write(str(parsed_dates) + '\n')
+    three_dot_two = parseregex(string[141], 2)
+    output.write('3.2AA:')
+    parsed_coordinates = []
+    for i in range(0, len(stations)):
+        parsed_coordinates.append(three_dot_two[i])
+    output.write(str(parsed_coordinates))
+    file.close()
+def main():
+    clear('remove_locals.sh')
     parser = argparse.ArgumentParser(description="Generate a .tex file from a .pdf file.")
     parser.add_argument('--filepath', type=str, help="Path to pdf to be converted")
     parser.add_argument('--folderpath', type=str, help="Path to folder containing pdfs to be converted. All pdfs in the folder will be converted")
@@ -40,28 +66,18 @@ def main():
     if folderpath:
         convert(folderpath)
     else:
-        convert(filepath)
+        while True:
+            print("Выберите вариант AA или BB:")
+            choice = str(input())
+            if choice == "AA":
+                print("Выберите файл для обработки (путь относительно расположения convert_pdf.py):")
+                filename = str(input())
+                convert(filepath)
+                AAProcess(filename+'.tex')
+                break
+            else:
+                break
 
-    file = open('7513_1699368017513-99999999BB.tex', 'r');
-    output = open('res.txt', 'w')
-    string = file.readlines()
-    print(string[77])
-    stations = parseregex(string[77], 0)
-    output.write('User Stations:')
-    output.write(str(stations)+'\n')
-    three_dot_one = parseregex(string[129], 1)
-    output.write('3.1AA:')
-    parsed_dates = []
-    for i in range (0, len(stations)):
-        parsed_dates.append(three_dot_one[i])
-    output.write(str(parsed_dates)+'\n')
-    three_dot_two = parseregex(string[141], 2)
-    output.write('3.2AA:')
-    parsed_coordinates = []
-    for i in range (0, len(stations)):
-        parsed_coordinates.append(three_dot_two[i])
-    output.write(str(parsed_coordinates))
-    file.close()
 
 if __name__ == "__main__":
     main()
