@@ -90,17 +90,15 @@ def main():
             print("Выберите вариант AA или BB:")
             choice = str(input())
             if choice == "AA":
-                print("Выберите файл для обработки (путь относительно расположения convert_pdf.py):")
-                filename = str(input())
+                filename = str(filepath).replace('.pdf', '')
                 convert(filepath)
                 AAProcess(filename+'.tex')
                 print(colored("Досвидания!", 'green'))
                 break
             if choice == "BB":
-                print("Выберите файл для обработки (путь относительно расположения convert_pdf.py):")
-                filename = str(input())
+                filename = str(filepath).replace('.pdf', '')
                 convert(filepath)
-                BBProcess(filename + '.tex')
+                AAProcess(filename + '.tex')
                 print(colored("Досвидания!", 'green'))
                 break
             else:
