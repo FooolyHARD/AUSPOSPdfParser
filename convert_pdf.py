@@ -1,6 +1,7 @@
 import argparse
 import re
 import subprocess
+from termcolor import colored
 from pdftolatex.pdf import *
 
 def convert(filepath):
@@ -18,8 +19,8 @@ def convert(filepath):
     texfile.generate_tex_file(filename+".tex")
 
 def parseregex(s, num):
-    regex = [r'\s[A-Z0-9]{4}\s', r'\d\d/\d\d/\d\d\d\d', r'\w{4}\s+\d+\s+\d+\s+\d+\.\d+\s+\d+\s\d+\s+\d+\.\d+\s+\d+\.\d+\s+\d+\.\d+'] #\w+\s\d+\s\d+\s\d+.\d+\s\d+\s\d+\s\d+.\d+\s\d+.\d+\s\d+.\d+.\s?\d+
-    #1 - Stations, 2 - 3.1AA, 3 - 3.2AA
+    regex = [r'\s[A-Z0-9]{4}\s', r'\d\d/\d\d/\d\d\d\d', r'\w{4}\s+\d+\s+\d+\s+\d+\.\d+\s+\d+\s\d+\s+\d+\.\d+\s+\d+\.\d+\s+\d+\.\d+', r'\d{2}\/\d{2}\/\d{4}'] #\w+\s\d+\s\d+\s\d+.\d+\s\d+\s\d+\s\d+.\d+\s\d+.\d+\s\d+.\d+.\s?\d+
+    #1 - Stations, 2 - 3.1AA, 3 - 3.2AA, 4 - 3.1BB, 5 - 3.2BB
     substring_one = re.sub(r'[^A-Za-z0-9\s/\.\-]+', '', s)
     substring_two = re.sub(r'\s*\.\s*', '.', substring_one)
     substring_three = re.sub(r'O', '0', substring_two)
@@ -34,7 +35,7 @@ def clear(script):
 
 def AAProcess(filename):
     file = open(str(filename), 'r');
-    output = open('res.txt', 'w')
+    output = open('res_AA.txt', 'w')
     string = file.readlines()
     stations = parseregex(string[77], 0)
     output.write('User Stations:')
@@ -50,7 +51,27 @@ def AAProcess(filename):
     parsed_coordinates = []
     for i in range(0, len(stations)):
         parsed_coordinates.append(three_dot_two[i])
-    output.write(str(parsed_coordinates))
+    output.write(str(parsed_coordinates)+"\n")
+    output.write('Нужный формат\n')
+    for i in range(0, len(stations)):
+        output.write(str(parsed_dates[i]) +' '+ str(parsed_coordinates[i]) + "\n")
+    file.close()
+
+def BBProcess(filename):
+    file = open(str(filename), 'r');
+    output = open('res_BB.txt', 'w')
+    string = file.readlines()
+    three_dot_one = parseregex(string[129], 3)
+    output.write('3.1BB:')
+    parsed_dates = three_dot_one
+    output.write(str(parsed_dates) + '\n')
+    three_dot_two = parseregex(string[141], 2)
+    output.write('3.2BB:')
+    parsed_coordinates = three_dot_two
+    output.write(str(parsed_coordinates)+"\n")
+    output.write('Нужный формат\n')
+    for i in range(0, len(parsed_dates)):
+        output.write(str(parsed_dates[i]) +' '+ str(parsed_coordinates[i]) + "\n")
     file.close()
 def main():
     clear('remove_locals.sh')
@@ -62,7 +83,6 @@ def main():
 
     filepath = args.filepath
     folderpath = args.folderpath
-
     if folderpath:
         convert(folderpath)
     else:
@@ -74,6 +94,14 @@ def main():
                 filename = str(input())
                 convert(filepath)
                 AAProcess(filename+'.tex')
+                print(colored("Досвидания!", 'green'))
+                break
+            if choice == "BB":
+                print("Выберите файл для обработки (путь относительно расположения convert_pdf.py):")
+                filename = str(input())
+                convert(filepath)
+                BBProcess(filename + '.tex')
+                print(colored("Досвидания!", 'green'))
                 break
             else:
                 break
