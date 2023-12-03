@@ -78,6 +78,7 @@ def AAProcess_forFolder(folder, res_name):
             convert(filename)
             filename = str(filename).replace('.pdf', '')
             AAProcess_forFile(filename + '.tex', res_name)
+            output.write("123")
 
 
 def BBProcess_forFile(filename):
