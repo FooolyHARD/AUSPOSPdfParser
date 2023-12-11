@@ -2,6 +2,10 @@
 .vscode/
 localstore/
 docs/*
+dist/*
+*.tex
+*.pdf
+test/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
