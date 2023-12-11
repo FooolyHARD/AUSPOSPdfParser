@@ -48,21 +48,15 @@ def AAProcess_forFile(filename, resname):
     file = open(str(filename), 'r');
     string = file.readlines()
     stations = parseregex(string[77], 0)
-    output.write('User Stations:')
     output.write(str(stations) + '\n')
     three_dot_one = parseregex(string[129], 1)
-    output.write('3.1AA:')
     parsed_dates = []
     for i in range(0, len(stations)):
         parsed_dates.append(three_dot_one[i])
-    output.write(str(parsed_dates) + '\n')
     three_dot_two = parseregex(string[141], 2)
-    output.write('3.2AA:')
     parsed_coordinates = []
     for i in range(0, len(stations)):
         parsed_coordinates.append(three_dot_two[i])
-    output.write(str(parsed_coordinates) + "\n")
-    output.write('Нужный формат\n')
     for i in range(0, len(stations)):
         output.write(str(parsed_dates[i]) + ' ' + str(parsed_coordinates[i]) + "\n")
     file.close()
@@ -92,7 +86,6 @@ def BBProcess_forFile(filename, resname):
     parsed_dates = three_dot_one
     three_dot_two = parseregex(string[141], 2)
     parsed_coordinates = three_dot_two
-    output.write('Нужный формат\n')
     for i in range(0, len(parsed_dates)):
         output.write(str(parsed_dates[i]) + ' ' + str(parsed_coordinates[i]) + "\n")
     file.close()
