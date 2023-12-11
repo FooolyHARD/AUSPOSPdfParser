@@ -81,41 +81,34 @@ def AAProcess_forFolder(folder, res_name):
             output.write("123")
 
 
-def BBProcess_forFile(filename):
+def BBProcess_forFile(filename, resname):
+    if not os.path.isfile(resname + '.txt'):
+        output = open(resname + '.txt', 'w')
+    else:
+        output = open(resname + '.txt', 'a')
     file = open(str(filename), 'r');
-    output = open('res_BB.txt', 'a')
     string = file.readlines()
     three_dot_one = parseregex(string[129], 3)
-    output.write('3.1BB:')
     parsed_dates = three_dot_one
-    output.write(str(parsed_dates) + '\n')
     three_dot_two = parseregex(string[141], 2)
-    output.write('3.2BB:')
     parsed_coordinates = three_dot_two
-    output.write(str(parsed_coordinates) + "\n")
     output.write('Нужный формат\n')
     for i in range(0, len(parsed_dates)):
         output.write(str(parsed_dates[i]) + ' ' + str(parsed_coordinates[i]) + "\n")
     file.close()
 
 
-def BBProcess_forFolder(filename):
-    file = open(str(filename), 'r');
-    output = open('res_BB.txt', 'w')
-    string = file.readlines()
-    three_dot_one = parseregex(string[129], 3)
-    output.write('3.1BB:')
-    parsed_dates = three_dot_one
-    output.write(str(parsed_dates) + '\n')
-    three_dot_two = parseregex(string[141], 2)
-    output.write('3.2BB:')
-    parsed_coordinates = three_dot_two
-    output.write(str(parsed_coordinates) + "\n")
-    output.write('Нужный формат\n')
-    for i in range(0, len(parsed_dates)):
-        output.write(str(parsed_dates[i]) + ' ' + str(parsed_coordinates[i]) + "\n")
-    file.close()
-
+def BBProcess_forFolder(folder, res_name):
+    output = open(res_name + '.txt', 'a')
+    directory = folder
+    for filename in os.listdir(directory):
+        f = os.path.join(directory, filename)
+        if os.path.isfile(f):
+            print(f)
+            convert(filename)
+            filename = str(filename).replace('.pdf', '')
+            BBProcess_forFile(filename + '.tex', res_name)
+            output.write("123")
 
 def main():
     clear('remove_locals.sh')
@@ -129,7 +122,19 @@ def main():
     filepath = args.filepath
     folderpath = args.folderpath
     if folderpath:
-        AAProcess_forFolder(folderpath, "res_AA_folder")
+        while True:
+            print("Выберите вариант AA или BB:")
+            choice = str(input())
+            if choice == "AA":
+                AAProcess_forFolder(folderpath, "res_AA_folder")
+                print(colored("Досвидания!", 'green'))
+                break
+            elif choice == "BB":
+                BBProcess_forFolder(folderpath, "res_BB_folder")
+                print(colored("Досвидания!", 'green'))
+                break
+            else:
+                break
     else:
         while True:
             print("Выберите вариант AA или BB:")
