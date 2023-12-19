@@ -135,7 +135,7 @@ def main():
             if choice == "AA":
                 filename = str(filepath).replace('.pdf', '')
                 convert(filepath)
-                AAProcess_forFile(filename + '.tex')
+                AAProcess_forFile(filename + '.tex', 'kek')
                 print(colored("Досвидания!", 'green'))
                 break
             if choice == "BB":
