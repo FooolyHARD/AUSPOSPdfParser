@@ -45,15 +45,31 @@ def AAProcess_forFile(filename, resname):
         output = open(resname + '.txt', 'w')
     else:
         output = open(resname + '.txt', 'a')
-    file = open(str(filename), 'r');
+    file = open(str(filename), 'r')
     string = file.readlines()
-    stations = parseregex(string[77], 0)
+    for str_line in string:
+        stations_line = "Station (s) Submitted File"
+        if stations_line in str_line:
+            stations_index = string.index(str_line)
+            print("Индекс строки станций {0}".format(stations_index))
+            break
+    stations = parseregex(string[stations_index], 0)
     output.write(str(stations) + '\n')
-    three_dot_one = parseregex(string[129], 1)
+    for str_line in string:
+        three_dot_one_line = " 3.1 "
+        if three_dot_one_line in str_line:
+            three_dot_one_index = string.index(str_line)
+            print(colored("Индекс строки 3.1 {0}".format(three_dot_one_index), 'yellow'))
+    three_dot_one = parseregex(string[three_dot_one_index], 1)
     parsed_dates = []
     for i in range(0, len(stations)):
         parsed_dates.append(three_dot_one[i])
-    three_dot_two = parseregex(string[141], 2)
+    for str_line in string:
+        three_dot_two_line = "Station Latitude"
+        if three_dot_two_line in str_line:
+            three_dot_two_index = string.index(str_line)
+            print(colored("Индекс строки 3.2 {0}".format(three_dot_two_index), 'blue'))
+    three_dot_two = parseregex(string[three_dot_two_index], 2)
     parsed_coordinates = []
     for i in range(0, len(stations)):
         parsed_coordinates.append(three_dot_two[i])
@@ -135,13 +151,13 @@ def main():
             if choice == "AA":
                 filename = str(filepath).replace('.pdf', '')
                 convert(filepath)
-                AAProcess_forFile(filename + '.tex', 'kek')
+                AAProcess_forFile(filename + '.tex', 'kek1')
                 print(colored("Досвидания!", 'green'))
                 break
             if choice == "BB":
                 filename = str(filepath).replace('.pdf', '')
                 convert(filepath)
-                BBProcess_forFile(filename + '.tex')
+                BBProcess_forFile(filename + '.tex', 'kek2')
                 print(colored("Досвидания!", 'green'))
                 break
             else:
