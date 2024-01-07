@@ -151,13 +151,13 @@ def main():
             if choice == "AA":
                 filename = str(filepath).replace('.pdf', '')
                 convert(filepath)
-                AAProcess_forFile(filename + '.tex', 'kek1')
+                AAProcess_forFile(filename + '.tex', 'AA_res_for_files')
                 print(colored("Досвидания!", 'green'))
                 break
             if choice == "BB":
                 filename = str(filepath).replace('.pdf', '')
                 convert(filepath)
-                BBProcess_forFile(filename + '.tex', 'kek2')
+                BBProcess_forFile(filename + '.tex', 'BB_res_for_files')
                 print(colored("Досвидания!", 'green'))
                 break
             else:
