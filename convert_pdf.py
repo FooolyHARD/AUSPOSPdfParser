@@ -98,9 +98,21 @@ def BBProcess_forFile(filename, resname):
         output = open(resname + '.txt', 'a')
     file = open(str(filename), 'r');
     string = file.readlines()
-    three_dot_one = parseregex(string[129], 3)
+    for str_line in string:
+        three_dot_one_line = ' 3.1 '
+        if three_dot_one_line in str_line:
+            three_dot_one_index = string.index(str_line)
+            print(colored("Индекс строки 3.1 {0}".format(three_dot_one_index), 'green'))
+            break
+    three_dot_one = parseregex(string[three_dot_one_index], 3)
     parsed_dates = three_dot_one
-    three_dot_two = parseregex(string[141], 2)
+    for str_line in string:
+        three_dot_two_line = 'Station Latitude'
+        if three_dot_two_line in str_line:
+            three_dot_two_index = string.index(str_line)
+            print(colored("Индекс строки 3.2 {0}".format(three_dot_two_index), 'blue'))
+            break
+    three_dot_two = parseregex(string[three_dot_two_index], 2)
     parsed_coordinates = three_dot_two
     for i in range(0, len(parsed_dates)):
         output.write(str(parsed_dates[i]) + ' ' + str(parsed_coordinates[i]) + "\n")
