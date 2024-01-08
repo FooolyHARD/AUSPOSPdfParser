@@ -2,8 +2,47 @@ import argparse
 import os.path
 import re
 import subprocess
+from io import BytesIO
+
 from termcolor import colored
 from pdftolatex.pdf import *
+import telebot
+
+bot = telebot.TeleBot('6494740034:AAHpiAMDPSjvisNzEoOJHrvaMgCQLyeTH1A')
+
+
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    bot.send_message(message.chat.id, "Привет! Отправь мне PDF файл, и я верну текстовый документ.")
+
+
+@bot.message_handler(content_types=['document'])
+def handle_document(message):
+    try:
+        bot.send_message(message.chat.id, "Ожидайте...")
+        # Получаем информацию о файле
+        file_info = bot.get_file(message.document.file_id)
+        file_path = file_info.file_path
+
+        # Загружаем файл в байтовом формате
+        file_data = bot.download_file(file_path)
+
+        # Сохраняем файл в локальный каталог
+        pdf_path = 'temp.pdf'
+        with open(pdf_path, 'wb') as pdf_file:
+            pdf_file.write(file_data)
+
+        # Конвертируем PDF в текст
+        text_result = parse_one(pdf_path)
+
+        # Отправляем текстовый результат пользователю
+        bot.send_message(message.chat.id, '\n'.join(text_result))
+
+        # Удаляем временный PDF файл
+        os.remove(pdf_path)
+
+    except Exception as e:
+        bot.send_message(message.chat.id, f"Произошла ошибка: {e}")
 
 
 def convert(filepath):
@@ -37,7 +76,7 @@ def parseregex(s, num):
 
 
 def clear(script):
-    subprocess.call(['sh', './' + script])
+    subprocess.call(['bash', './' + script])
 
 
 def AAProcess_forFile(filename, resname):
@@ -88,7 +127,6 @@ def AAProcess_forFolder(folder, res_name):
             convert(filename)
             filename = str(filename).replace('.pdf', '')
             AAProcess_forFile(filename + '.tex', res_name)
-            output.write("123")
 
 
 def BBProcess_forFile(filename, resname):
@@ -114,6 +152,7 @@ def BBProcess_forFile(filename, resname):
             break
     three_dot_two = parseregex(string[three_dot_two_index], 2)
     parsed_coordinates = three_dot_two
+    print(len(parsed_dates))
     for i in range(0, len(parsed_dates)):
         output.write(str(parsed_dates[i]) + ' ' + str(parsed_coordinates[i]) + "\n")
     file.close()
@@ -129,9 +168,9 @@ def BBProcess_forFolder(folder, res_name):
             convert(filename)
             filename = str(filename).replace('.pdf', '')
             BBProcess_forFile(filename + '.tex', res_name)
-            output.write("123")
 
-def main():
+
+def parse(dir_or_file, variant):
     clear('remove_locals.sh')
     parser = argparse.ArgumentParser(description="Generate a .tex file from a .pdf file.")
     parser.add_argument('--filepath', type=str, help="Path to pdf to be converted")
@@ -176,5 +215,22 @@ def main():
                 break
 
 
-if __name__ == "__main__":
-    main()
+def return_from_file(filepath):
+    file = open(filepath)
+    lines =[]
+    for line in file:
+        print(line)
+        lines.append(line)
+    return lines
+
+def parse_one(filepath):
+    clear('remove_locals.sh')
+    filename = str(filepath).replace('.pdf', '')
+    convert(filepath)
+    AAProcess_forFile(filename + '.tex', 'tmp')
+    print(colored("Досвидания!", 'green'))
+    return return_from_file("tmp.txt")
+
+
+# Запуск бота
+bot.polling(none_stop=True)
