@@ -3,12 +3,12 @@ import os.path
 import re
 import subprocess
 from io import BytesIO
-
+from config import token
 from termcolor import colored
 from pdftolatex.pdf import *
 import telebot
-token = open('TOKEN.txt')
-bot = telebot.TeleBot(str(token.readlines(0)))
+
+bot = telebot.TeleBot(token)
 
 user_data = {}
 

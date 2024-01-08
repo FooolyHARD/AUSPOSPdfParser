@@ -6,7 +6,7 @@ dist/*
 *.tex
 *.pdf
 test/*
-TOKEN.txt
+config.py
 *.spec
 kek1.txt
 Dockerfile
