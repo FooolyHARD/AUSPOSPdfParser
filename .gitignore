@@ -6,6 +6,15 @@ dist/*
 *.tex
 *.pdf
 test/*
+TOKEN.txt
+*.spec
+kek1.txt
+Dockerfile
+AA_res_for_files.txt
+BB_res_for_files.txt
+res_AA_folder.txt
+res_BB_folder.txt
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

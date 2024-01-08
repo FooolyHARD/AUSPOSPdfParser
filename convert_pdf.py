@@ -7,8 +7,10 @@ from io import BytesIO
 from termcolor import colored
 from pdftolatex.pdf import *
 import telebot
+token = open('TOKEN.txt')
+bot = telebot.TeleBot(str(token.readlines(0)))
 
-bot = telebot.TeleBot('6494740034:AAHpiAMDPSjvisNzEoOJHrvaMgCQLyeTH1A')
+user_data = {}
 
 
 @bot.message_handler(commands=['start'])
@@ -16,10 +18,53 @@ def handle_start(message):
     bot.send_message(message.chat.id, "Привет! Отправь мне PDF файл, и я верну текстовый документ.")
 
 
+@bot.message_handler(commands=['help'])
+def handle_help(message):
+    bot.send_message(message.chat.id,
+                     "Вот список доступных команд: /send - отправить боту один файл \n/send_alot - отправить боту несколько файлов")
+
+
+@bot.message_handler(commands=["send"])
+def handle_send(message):
+    # Добавление пользователя в словарь данных
+    user_data[message.chat.id] = {'option': '', 'num_files': 1}
+    # Отправка диалогового окна с вариантами обработки
+    markup = telebot.types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    markup.add('AA', 'BB')
+    bot.send_message(message.chat.id, "Выберите вариант обработки:", reply_markup=markup)
+
+
+@bot.message_handler(func=lambda message: message.text in ['AA', 'BB'] and message.chat.id in user_data)
+def handle_option(message):
+    # Сохранение выбранного варианта обработки
+    user_data[message.chat.id]['option'] = message.text
+
+    # Отправка диалогового окна с вопросом о количестве файлов
+    markup = telebot.types.ReplyKeyboardRemove(selective=False)
+    bot.send_message(message.chat.id, "Введите количество файлов:", reply_markup=markup)
+
+
+@bot.message_handler(func=lambda message: message.chat.id in user_data and message.text.isdigit())
+def handle_num_files(message):
+    try:
+        # Попытка получить количество файлов из сообщения
+        num_files = int(message.text)
+
+        # Сохранение количества файлов в данных пользователя
+        user_data[message.chat.id]['num_files'] = num_files
+
+        # Отправка подтверждения
+        bot.send_message(message.chat.id, f"Будет обработано {num_files} файлов. Отправьте мне PDF файл(ы).")
+
+    except ValueError:
+        bot.send_message(message.chat.id, "Пожалуйста, введите корректное количество файлов (целое число).")
+
+
 @bot.message_handler(content_types=['document'])
 def handle_document(message):
     try:
-        bot.send_message(message.chat.id, "Ожидайте...")
+        clear('remove_locals.sh')
+        user_data[message.chat.id]['num_files'] -= 1
         # Получаем информацию о файле
         file_info = bot.get_file(message.document.file_id)
         file_path = file_info.file_path
@@ -27,19 +72,27 @@ def handle_document(message):
         # Загружаем файл в байтовом формате
         file_data = bot.download_file(file_path)
 
+        option = user_data[message.chat.id]['option']
+        num_files = user_data[message.chat.id]['num_files']
+
         # Сохраняем файл в локальный каталог
+        bot.send_message(message.chat.id, "Ожидайте...")
         pdf_path = 'temp.pdf'
         with open(pdf_path, 'wb') as pdf_file:
             pdf_file.write(file_data)
-
         # Конвертируем PDF в текст
-        text_result = parse_one(pdf_path)
-
-        # Отправляем текстовый результат пользователю
-        bot.send_message(message.chat.id, '\n'.join(text_result))
-
-        # Удаляем временный PDF файл
+        parse_files(pdf_path, option, 1)
         os.remove(pdf_path)
+
+        print(num_files)
+        if num_files > 0:
+            bot.send_message(message.chat.id, "Следующий")
+        else:
+            f = open('tmp.txt')
+            bot.send_document(message.chat.id, f)
+            # Отправляем текстовый результат пользователю
+            bot.send_message(message.chat.id, "Готово!")
+            os.remove('tmp.txt')
 
     except Exception as e:
         bot.send_message(message.chat.id, f"Произошла ошибка: {e}")
@@ -217,11 +270,12 @@ def parse(dir_or_file, variant):
 
 def return_from_file(filepath):
     file = open(filepath)
-    lines =[]
+    lines = []
     for line in file:
         print(line)
         lines.append(line)
     return lines
+
 
 def parse_one(filepath):
     clear('remove_locals.sh')
@@ -232,5 +286,17 @@ def parse_one(filepath):
     return return_from_file("tmp.txt")
 
 
-# Запуск бота
+def parse_files(filepath, option, num_files):
+    clear('remove_locals.sh')
+    for i in range(num_files):
+        filename = str(filepath).replace('.pdf', '')
+        convert(filepath)
+        if option == "AA":
+            AAProcess_forFile(filename + '.tex', 'tmp')
+            print(colored("Досвитания!", 'green'))
+        if option == "BB":
+            BBProcess_forFile(filename + '.tex', 'tmp')
+            print(colored('Доствидания!', 'green'))
+
+
 bot.polling(none_stop=True)
