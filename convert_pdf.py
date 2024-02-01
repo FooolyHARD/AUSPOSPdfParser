@@ -7,6 +7,7 @@ from config import token
 from termcolor import colored
 from pdftolatex.pdf import *
 import telebot
+from time import time
 
 bot = telebot.TeleBot(token)
 
@@ -299,4 +300,9 @@ def parse_files(filepath, option, num_files):
             print(colored('Доствидания!', 'green'))
 
 
-bot.polling(none_stop=True)
+while (True):
+    try:
+        bot.polling(none_stop=True)
+    except Exception as e:
+        time.sleep(3)
+        print(e)
