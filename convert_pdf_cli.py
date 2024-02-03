@@ -89,9 +89,10 @@ def AAProcess_forFolder(folder, res_name):
         f = os.path.join(directory, filename)
         if os.path.isfile(f):
             print(f)
-            convert(filename)
-            filename = str(filename).replace('.pdf', '')
-            AAProcess_forFile(filename + '.tex', res_name)
+            _filename = folder + "/" + filename
+            convert(_filename)
+            _filename = str(_filename).replace('.pdf', '')
+            AAProcess_forFile(_filename + '.tex', res_name)
 
 
 def BBProcess_forFile(filename, resname):
@@ -130,9 +131,10 @@ def BBProcess_forFolder(folder, res_name):
         f = os.path.join(directory, filename)
         if os.path.isfile(f):
             print(f)
-            convert(filename)
-            filename = str(filename).replace('.pdf', '')
-            BBProcess_forFile(filename + '.tex', res_name)
+            _filename = folder + "/" + filename
+            convert(_filename)
+            _filename = str(_filename).replace('.pdf', '')
+            BBProcess_forFile(_filename + '.tex', res_name)
 
 
 def main():

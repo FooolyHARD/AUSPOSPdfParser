@@ -302,7 +302,8 @@ def parse_files(filepath, option, num_files):
 
 while (True):
     try:
-        bot.polling(none_stop=True)
+        bot.infinity_polling(timeout=10, long_polling_timeout=5)
     except Exception as e:
-        time.sleep(3)
+        time.sleep(20)
         print(e)
+        continue
