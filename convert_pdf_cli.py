@@ -86,14 +86,18 @@ def AAProcess_forFolder(folder, res_name):
     output = open(res_name + '.txt', 'a')
     directory = folder
     for filename in os.listdir(directory):
-        f = os.path.join(directory, filename)
-        if os.path.isfile(f):
-            print(f)
-            _filename = folder + "/" + filename
-            convert(_filename)
-            _filename = str(_filename).replace('.pdf', '')
-            AAProcess_forFile(_filename + '.tex', res_name)
-
+        try:
+            f = os.path.join(directory, filename)
+            if os.path.isfile(f):
+                print(f)
+                _filename = folder + "/" + filename
+                convert(_filename)
+                _filename = str(_filename).replace('.pdf', '')
+                AAProcess_forFile(_filename + '.tex', res_name)
+        except Exception as e:
+            print(colored("Произошла ошибка при обработке файла {0}".format(filename), 'red'))
+            print(e)
+            continue
 
 def BBProcess_forFile(filename, resname):
     if not os.path.isfile(resname + '.txt'):
@@ -128,13 +132,19 @@ def BBProcess_forFolder(folder, res_name):
     output = open(res_name + '.txt', 'a')
     directory = folder
     for filename in os.listdir(directory):
-        f = os.path.join(directory, filename)
-        if os.path.isfile(f):
-            print(f)
-            _filename = folder + "/" + filename
-            convert(_filename)
-            _filename = str(_filename).replace('.pdf', '')
-            BBProcess_forFile(_filename + '.tex', res_name)
+        try:
+            f = os.path.join(directory, filename)
+            if os.path.isfile(f):
+                print(f)
+                _filename = folder + "/" + filename
+                convert(_filename)
+                _filename = str(_filename).replace('.pdf', '')
+                BBProcess_forFile(_filename + '.tex', res_name)
+        except Exception as e:
+            print(colored("Произошла ошибка при обработке файла {0}".format(filename), 'red'))
+            print(e)
+            continue
+
 
 
 def main():
