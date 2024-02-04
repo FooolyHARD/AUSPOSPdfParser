@@ -27,7 +27,7 @@ def convert(filepath):
 
 def parseregex(s, num):
     regex = [r'\s[A-Z0-9]{4}\s', r'\d\d/\d\d/\d\d\d\d',
-             r'\w{4}\s+\d+\s+\d+\s+\d+\.\d+\s+\d+\s\d+\s+\d+\.\d+\s+\d+\.\d+\s+\d+\.\d+',
+             r'\w{4}.?\s+\d+\s+\d+\s+\d+\.\d+\s+\d+\s\d+\s+\d+\.\d+\s+\d+\.\d+\s+\d+\.\d+',
              r'\d{2}\/\d{2}\/\d{4}']  # \w+\s\d+\s\d+\s\d+.\d+\s\d+\s\d+\s\d+.\d+\s\d+.\d+\s\d+.\d+.\s?\d+
     # 1 - Stations, 2 - 3.1AA, 3 - 3.2AA, 4 - 3.1BB, 5 - 3.2BB
     substring_one = re.sub(r'[^A-Za-z0-9\s/\.\-]+', '', s)
@@ -84,6 +84,7 @@ def AAProcess_forFile(filename, resname):
 
 def AAProcess_forFolder(folder, res_name):
     output = open(res_name + '.txt', 'a')
+    subprocess.call(['rm -r ' + folder + '/*.tex'], shell=True)
     directory = folder
     for filename in os.listdir(directory):
         try:
@@ -95,9 +96,12 @@ def AAProcess_forFolder(folder, res_name):
                 _filename = str(_filename).replace('.pdf', '')
                 AAProcess_forFile(_filename + '.tex', res_name)
         except Exception as e:
+            if e == "IndexError: list index out of range":
+                output.write(filename+" не обработан, обратитесь к автору")
             print(colored("Произошла ошибка при обработке файла {0}".format(filename), 'red'))
             print(e)
             continue
+    clear('remove_locals.sh')
 
 def BBProcess_forFile(filename, resname):
     if not os.path.isfile(resname + '.txt'):
@@ -130,6 +134,7 @@ def BBProcess_forFile(filename, resname):
 
 def BBProcess_forFolder(folder, res_name):
     output = open(res_name + '.txt', 'a')
+    subprocess.call(['rm -r '+folder+'/*.tex'], shell=True)
     directory = folder
     for filename in os.listdir(directory):
         try:
@@ -141,6 +146,8 @@ def BBProcess_forFolder(folder, res_name):
                 _filename = str(_filename).replace('.pdf', '')
                 BBProcess_forFile(_filename + '.tex', res_name)
         except Exception as e:
+            if e == "IndexError: list index out of range":
+                output.write(filename+" не обработан, обратитесь к автору")
             print(colored("Произошла ошибка при обработке файла {0}".format(filename), 'red'))
             print(e)
             continue
