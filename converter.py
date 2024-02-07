@@ -100,7 +100,7 @@ def BB_folder_extract(folder, resfilename):
 
 def parseregex(s, num):
     regex = [r'\s[A-Z0-9]{4}\s', r'\d\d/\d\d/\d\d\d\d',
-             r'\w{4}.?\s+\d+\s+\d+\s+\d+\.\d+\s+\d+\s\d+\s+\d+\.\d+\s+\d+\.\d+\s+\d+\.\d+',
+             r'\w{4}\s\-?\d*\s\-?\d*\s\-?\d*\.\d*\s\-?\d*\s\-?\d*\s\-?\d*\.\d*\s\-?\d*\.\d*\s\-?\d*\.\d*',
              r'\d{2}\/\d{2}\/\d{4}']  # \w+\s\d+\s\d+\s\d+.\d+\s\d+\s\d+\s\d+.\d+\s\d+.\d+\s\d+.\d+.\s?\d+
     # 1 - Stations, 2 - 3.1AA, 3 - 3.2AA, 4 - 3.1BB, 5 - 3.2BB
     substring_one = re.sub(r'[^A-Za-z0-9\s/\.\-]+', '', s)
