@@ -43,8 +43,9 @@ def AA_file_extract(filepath, resfilename):
     #extracting 3.2
     three_dot_two_info = []
     three_dot_two_page_one = convert_pdf_to_txt(filepath, 2)
-    three_dot_two_page_two = convert_pdf_to_txt(filepath, 4)
-    three_dot_two_page = three_dot_two_page_one+three_dot_two_page_two
+    three_dot_two_page_two = convert_pdf_to_txt(filepath, 3)
+    three_dot_two_page_three = convert_pdf_to_txt(filepath, 4)
+    three_dot_two_page = three_dot_two_page_one+three_dot_two_page_two+three_dot_two_page_three
     parsed = parseregex(three_dot_two_page, 2)
     for i in range (len(user_stations)):
         three_dot_two_info.append(parsed[i])
