@@ -59,6 +59,7 @@ def AA_folder_exctract(folder, resfilename):
     f = open(resfilename + '.txt', 'w')
     directory = folder
     for filename in os.listdir(directory):
+        print(filename)
         f = os.path.join(directory, filename)
         if os.path.isfile(f):
             AA_file_extract(folder+"/"+filename, resfilename)
